@@ -1,4 +1,3 @@
-// src/pages/Swap.tsx
 import React, { useEffect, useState } from "react";
 import {
   ConnectButton,
@@ -9,12 +8,17 @@ import {
 import { Transaction } from "@mysten/sui/transactions";
 import { getRoute, swapPTB } from "navi-aggregator-sdk";
 
+// Map token selections to full coin types for mainnet
+const COIN_TYPE_MAP: Record<string, string> = {
+  SUI: "0x2::sui::SUI",
+  USDC: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+  // add other tokens if needed
+};
+
 const Swap: React.FC = () => {
   // Local state for input fields and feedback
-  const [fromCoinType, setFromCoinType] = useState<string>("0x2::sui::SUI"); // default SUI type
-  const [toCoinType, setToCoinType] = useState<string>(
-    "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC"
-  ); // USDC mainnet type
+  const [fromToken, setFromToken] = useState<string>("SUI"); // default token selection
+  const [toToken, setToToken] = useState<string>("USDC"); // default to USDC
   const [amount, setAmount] = useState<string>(""); // amount to swap (in smallest unit)
   const [slippage, setSlippage] = useState<number>(0.5); // slippage tolerance in %
   const [txStatus, setTxStatus] = useState<string>("");
@@ -26,17 +30,20 @@ const Swap: React.FC = () => {
     useSignAndExecuteTransaction();
   const suiClient = useSuiClient();
 
-  // Fetch a swap quote when inputs change (if all required fields are set)
+  // Fetch a swap quote when inputs change
   useEffect(() => {
     const fetchQuote = async () => {
-      if (!fromCoinType || !toCoinType || !amount) {
+      if (!COIN_TYPE_MAP[fromToken] || !COIN_TYPE_MAP[toToken] || !amount) {
         setQuoteOut(null);
         return;
       }
       try {
-        // Convert amount to BigInt (assumes input is an integer string in smallest unit)
         const amountBig = BigInt(amount);
-        const quote = await getRoute(fromCoinType, toCoinType, amountBig);
+        const quote = await getRoute(
+          COIN_TYPE_MAP[fromToken],
+          COIN_TYPE_MAP[toToken],
+          amountBig
+        );
         const expectedOut = BigInt(quote.amount_out);
         setQuoteOut(expectedOut);
       } catch (err) {
@@ -45,15 +52,14 @@ const Swap: React.FC = () => {
       }
     };
     fetchQuote();
-  }, [fromCoinType, toCoinType, amount]);
+  }, [fromToken, toToken, amount]);
 
-  // Helper: Fetch a coin object of the given type from the connected wallet
+  // Helper: fetch a coin object from the wallet for a given token type and required amount
   const fetchCoinObject = async (
     owner: string,
     coinType: string,
     amountIn: bigint
-  ) => {
-    // Query the Sui network for coins of the given type owned by the wallet
+  ): Promise<string> => {
     const coinsResponse = await suiClient.getCoins({ owner, coinType });
     const coins = coinsResponse.data;
     if (!coins || coins.length === 0) {
@@ -62,7 +68,7 @@ const Swap: React.FC = () => {
     // Select the first coin with sufficient balance
     const coin = coins.find((c) => BigInt(c.balance) >= amountIn);
     if (!coin) {
-      throw new Error("Insufficient coin balance for the swap");
+      throw new Error("Insufficient coin balance for swap");
     }
     return coin.coinObjectId;
   };
@@ -83,9 +89,13 @@ const Swap: React.FC = () => {
       const amountIn = BigInt(amount);
 
       // Get a quote to compute minimum acceptable output based on slippage tolerance.
-      const quote = await getRoute(fromCoinType, toCoinType, amountIn);
+      const quote = await getRoute(
+        COIN_TYPE_MAP[fromToken],
+        COIN_TYPE_MAP[toToken],
+        amountIn
+      );
       const expectedOut = BigInt(quote.amount_out);
-      const slippageTolerance = slippage / 100; // e.g., 0.5% becomes 0.005
+      const slippageTolerance = slippage / 100;
       const minOut =
         expectedOut -
         (expectedOut * BigInt(Math.floor(slippageTolerance * 100))) /
@@ -94,30 +104,26 @@ const Swap: React.FC = () => {
       // Build the transaction using Sui SDK's Transaction class
       const tx = new Transaction();
 
-      // --- Coin selection logic ---
-      // Instead of a placeholder, fetch the actual coin object for fromCoinType from the wallet.
+      // Fetch a valid coin object from the wallet for the 'from' token
       const coinObjectId = await fetchCoinObject(
         userAddress,
-        fromCoinType,
+        COIN_TYPE_MAP[fromToken],
         amountIn
       );
-      // Use the fetched coin object in the transaction
       const coinInput = tx.object(coinObjectId);
 
-      // Call the NAVI SDK function to add swap instructions to the transaction.
-      // (swapPTB appends the necessary Move call instructions to tx.)
+      // Use the NAVI SDK function to add swap instructions to the transaction.
       await swapPTB(
         userAddress, // user's wallet address
-        tx, // transaction block to populate
-        fromCoinType,
-        toCoinType,
-        coinInput, // now using the actual coin object from the wallet
+        tx, // transaction to populate
+        COIN_TYPE_MAP[fromToken], // source coin type
+        COIN_TYPE_MAP[toToken], // target coin type
+        coinInput, // real coin object from wallet
         amountIn,
         Number(minOut)
       );
-      // (After swapPTB, tx now contains instructions for performing the swap.)
+      // (After swapPTB, tx now contains the instructions for performing the swap.)
 
-      // Execute the transaction via the wallet – using the updated hook from dApp Kit.
       setTxStatus("Signing and executing transaction...");
       signAndExecuteTransaction(
         { transaction: tx, chain: "sui:mainnet" },
@@ -143,7 +149,7 @@ const Swap: React.FC = () => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Token Swap</h2>
-      {/* Display wallet connection status */}
+      {/* Wallet connection status */}
       {currentAccount ? (
         <p>Connected as: {currentAccount.address}</p>
       ) : (
@@ -151,47 +157,51 @@ const Swap: React.FC = () => {
       )}
       <ConnectButton />
 
-      <div className="mt-4">
-        <label className="block mb-2">
-          From Token:
-          <input
-            type="text"
-            value={fromCoinType}
-            onChange={(e) => setFromCoinType(e.target.value)}
-            placeholder="e.g., 0x2::sui::SUI"
-            className="border p-2 w-full mt-1"
-          />
-        </label>
-        <label className="block mb-2">
-          To Token:
-          <input
-            type="text"
-            value={toCoinType}
+      <div className="mt-4 space-y-4">
+        <div>
+          <label className="block">From Token:</label>
+          <select
+            value={fromToken}
+            onChange={(e) => setFromToken(e.target.value)}
+            className="border p-2 w-full"
+          >
+            <option value="SUI">SUI</option>
+            <option value="USDC">USDC</option>
+            {/* Add other tokens as needed */}
+          </select>
+        </div>
+        <div>
+          <label className="block">To Token:</label>
+          <select
+            value={toToken}
             onChange={(e) => setToCoinType(e.target.value)}
-            placeholder="e.g., USDC mainnet type"
-            className="border p-2 w-full mt-1"
-          />
-        </label>
-        <label className="block mb-2">
-          Amount (in smallest unit):
+            className="border p-2 w-full"
+          >
+            <option value="USDC">USDC</option>
+            <option value="SUI">SUI</option>
+            {/* Add other tokens as needed */}
+          </select>
+        </div>
+        <div>
+          <label className="block">Amount (in smallest unit):</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Enter amount"
-            className="border p-2 w-full mt-1"
+            className="border p-2 w-full"
           />
-        </label>
-        <label className="block mb-2">
-          Slippage Tolerance (%):
+        </div>
+        <div>
+          <label className="block">Slippage Tolerance (%):</label>
           <input
             type="number"
             step="0.1"
             value={slippage}
             onChange={(e) => setSlippage(parseFloat(e.target.value))}
-            className="border p-2 w-full mt-1"
+            className="border p-2 w-full"
           />
-        </label>
+        </div>
       </div>
       {quoteOut !== null && (
         <p className="mt-2">
@@ -201,11 +211,7 @@ const Swap: React.FC = () => {
       <button
         onClick={handleSwap}
         disabled={
-          !currentAccount ||
-          isLoading ||
-          !amount ||
-          !fromCoinType ||
-          !toCoinType
+          !currentAccount || isLoading || !amount || !fromToken || !toToken
         }
         className="bg-blue-600 text-white px-4 py-2 mt-4 rounded hover:bg-blue-700"
       >

@@ -1,4 +1,3 @@
-// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
@@ -6,12 +5,12 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { getFullnodeUrl } from "@mysten/sui/client";
-import store from "./redux/store"; // Updated: default import for store
+import store from "./redux/store";
 import App from "./App";
 import "@mysten/dapp-kit/dist/index.css";
 import "./index.css";
 
-// Manually define network configuration for Sui:
+// Manually define network configuration for Sui mainnet (and other networks)
 const networkConfig = {
   mainnet: { url: getFullnodeUrl("mainnet") },
   testnet: { url: getFullnodeUrl("testnet") },
