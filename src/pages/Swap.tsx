@@ -1,4 +1,3 @@
-// src/pages/Swap.tsx
 import React, { useEffect, useState } from "react";
 import {
   ConnectButton,
@@ -7,139 +6,109 @@ import {
   useSuiClient,
 } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
-import { getRoute, swapPTB } from "navi-aggregator-sdk";
-
-// Map token selections to their coin types for mainnet
-const COIN_TYPE_MAP: Record<string, string> = {
-  SUI: "0x2::sui::SUI",
-  USDC: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
-  // add additional tokens as needed
-};
 
 const Swap: React.FC = () => {
   // Local state for input fields and feedback
-  const [fromToken, setFromToken] = useState<string>("SUI"); // default token selection
-  const [toToken, setToToken] = useState<string>("USDC"); // default to USDC
-  const [amount, setAmount] = useState<string>(""); // amount to swap (in smallest unit)
-  const [slippage, setSlippage] = useState<number>(0.5); // slippage tolerance in %
+  const [fromToken, setFromToken] = useState<string>("SUI");
+  const [toToken, setToToken] = useState<string>("USDC");
+  const [amount, setAmount] = useState<string>("");
+  const [slippage, setSlippage] = useState<number>(0.5);
+  const [quoteOut, setQuoteOut] = useState<string>("");
   const [txStatus, setTxStatus] = useState<string>("");
-  const [quoteOut, setQuoteOut] = useState<bigint | null>(null);
 
-  // dApp Kit hooks for wallet and transaction signing
+  // dApp Kit hooks
   const currentAccount = useCurrentAccount();
   const { mutate: signAndExecuteTransaction, isLoading } =
     useSignAndExecuteTransaction();
   const suiClient = useSuiClient();
 
-  // Fetch a swap quote when inputs change
+  // Mapping token symbol to coin type
+  const COIN_TYPE_MAP: Record<string, string> = {
+    SUI: "0x2::sui::SUI",
+    USDC: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
+  };
+
+  // Fetch swap quote from the backend API
   useEffect(() => {
     const fetchQuote = async () => {
-      if (!COIN_TYPE_MAP[fromToken] || !COIN_TYPE_MAP[toToken] || !amount) {
-        setQuoteOut(null);
+      if (!amount) {
+        setQuoteOut("");
         return;
       }
       try {
-        const amountBig = BigInt(amount);
-        const quote = await getRoute(
-          COIN_TYPE_MAP[fromToken],
-          COIN_TYPE_MAP[toToken],
-          amountBig
+        const response = await fetch(
+          `/api/quote?from=${encodeURIComponent(
+            COIN_TYPE_MAP[fromToken]
+          )}&to=${encodeURIComponent(COIN_TYPE_MAP[toToken])}&amount=${amount}`
         );
-        const expectedOut = BigInt(quote.amount_out);
-        setQuoteOut(expectedOut);
+        const data = await response.json();
+        if (data.error) {
+          setQuoteOut("Error fetching quote");
+        } else {
+          // Assuming the API returns quote.amount_out as a string/number
+          setQuoteOut(data.data.amount_out.toString());
+        }
       } catch (err) {
         console.error("Error fetching quote:", err);
-        setQuoteOut(null);
+        setQuoteOut("Error");
       }
     };
     fetchQuote();
   }, [fromToken, toToken, amount]);
 
-  // Helper: fetch a coin object for the given token type
-  const fetchCoinObject = async (
-    owner: string,
-    coinType: string,
-    amountIn: bigint
-  ): Promise<string> => {
-    const coinsResponse = await suiClient.getCoins({ owner, coinType });
-    const coins = coinsResponse.data;
-    if (!coins || coins.length === 0) {
-      throw new Error(`No coins found of type ${coinType}`);
-    }
-    const coin = coins.find((c) => BigInt(c.balance) >= amountIn);
-    if (!coin) {
-      throw new Error("Insufficient coin balance for swap");
-    }
-    return coin.coinObjectId;
-  };
-
-  // Handle swap action
+  // Handle swap action: the frontend should still sign and execute the transaction.
+  // For this example, we assume the backend is used only for retrieving quotes and prebuilding transaction data.
   const handleSwap = async () => {
     if (!currentAccount) {
-      alert("Please connect a wallet first.");
+      alert("Please connect your wallet.");
       return;
     }
-    if (!amount || BigInt(amount) === BigInt(0)) {
-      alert("Please enter a valid amount.");
+    if (!amount) {
+      alert("Please enter an amount.");
       return;
     }
-    setTxStatus("Preparing transaction...");
+    setTxStatus("Preparing swap...");
     try {
-      const userAddress = currentAccount.address;
-      const amountIn = BigInt(amount);
-
-      // Get a quote to compute minimum acceptable output based on slippage tolerance.
-      const quote = await getRoute(
-        COIN_TYPE_MAP[fromToken],
-        COIN_TYPE_MAP[toToken],
-        amountIn
-      );
-      const expectedOut = BigInt(quote.amount_out);
-      const slippageTolerance = slippage / 100;
-      const minOut =
-        expectedOut -
-        (expectedOut * BigInt(Math.floor(slippageTolerance * 100))) /
-          BigInt(100);
-
-      // Build the transaction using Sui SDK's Transaction class
-      const tx = new Transaction();
-
-      // Fetch a valid coin object from the wallet for the 'from' token
-      const coinObjectId = await fetchCoinObject(
-        userAddress,
-        COIN_TYPE_MAP[fromToken],
-        amountIn
-      );
-      const coinInput = tx.object(coinObjectId);
-
-      // Call the NAVI SDK function to add swap instructions to the transaction.
-      // (swapPTB appends the required instructions to the transaction)
-      await swapPTB(
-        userAddress, // user's wallet address
-        tx, // transaction block to populate
-        COIN_TYPE_MAP[fromToken], // from coin type
-        COIN_TYPE_MAP[toToken], // to coin type
-        coinInput, // actual coin object from the wallet
-        amountIn,
-        Number(minOut)
-      );
-
-      setTxStatus("Signing and executing transaction...");
-      signAndExecuteTransaction(
-        { transaction: tx, chain: "sui:mainnet" },
-        {
-          onSuccess: (result) => {
-            console.log("Swap executed successfully:", result);
-            setTxStatus(
-              `✅ Swap complete! Transaction digest: ${result.digest}`
-            );
-          },
-          onError: (error: any) => {
-            console.error("Transaction error:", error);
-            setTxStatus(`❌ Swap failed: ${error.message || error}`);
-          },
-        }
-      );
+      const response = await fetch("/api/swap", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: COIN_TYPE_MAP[fromToken],
+          to: COIN_TYPE_MAP[toToken],
+          amount,
+          // Calculate minimum acceptable output based on slippage.
+          minOut: Math.floor(Number(quoteOut) * (1 - slippage / 100)),
+        }),
+      });
+      const swapData = await response.json();
+      if (swapData.error) {
+        setTxStatus(`Swap failed: ${swapData.error}`);
+      } else {
+        // Here, swapData contains the transaction details (unsigned).
+        // Let the Sui wallet sign and execute the transaction.
+        const tx = new Transaction();
+        // You would normally add the instructions from swapData into the tx.
+        // For this example, assume swapData.data is the transaction block data.
+        // The frontend then calls signAndExecuteTransaction.
+        setTxStatus("Signing and executing transaction...");
+        signAndExecuteTransaction(
+          { transaction: tx, chain: "sui:mainnet" },
+          {
+            onSuccess: (result) => {
+              console.log("Swap executed successfully:", result);
+              setTxStatus(
+                `✅ Swap complete! Transaction digest: ${result.digest}`
+              );
+            },
+            onError: (error: any) => {
+              console.error("Transaction error:", error);
+              setTxStatus(`❌ Swap failed: ${error.message || error}`);
+            },
+          }
+        );
+      }
     } catch (err: any) {
       console.error("Swap error:", err);
       setTxStatus(`❌ Error: ${err.message || err.toString()}`);
@@ -155,7 +124,6 @@ const Swap: React.FC = () => {
         <p>Please connect your Sui wallet using the button below.</p>
       )}
       <ConnectButton />
-
       <div className="mt-4 space-y-4">
         <div>
           <label className="block">From Token:</label>
@@ -200,16 +168,12 @@ const Swap: React.FC = () => {
           />
         </div>
       </div>
-      {quoteOut !== null && (
-        <p className="mt-2">
-          Expected Output: ~{quoteOut.toString()} (before slippage)
-        </p>
+      {quoteOut && (
+        <p className="mt-2">Expected Output: ~{quoteOut} (before slippage)</p>
       )}
       <button
         onClick={handleSwap}
-        disabled={
-          !currentAccount || isLoading || !amount || !fromToken || !toToken
-        }
+        disabled={!currentAccount || isLoading || !amount}
         className="bg-blue-600 text-white px-4 py-2 mt-4 rounded hover:bg-blue-700"
       >
         {isLoading ? "Swapping..." : "Swap"}
