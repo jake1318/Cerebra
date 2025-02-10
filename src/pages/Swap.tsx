@@ -1,3 +1,4 @@
+// src/pages/Swap.tsx
 import React, { useEffect, useState } from "react";
 import {
   ConnectButton,
@@ -8,11 +9,11 @@ import {
 import { Transaction } from "@mysten/sui/transactions";
 import { getRoute, swapPTB } from "navi-aggregator-sdk";
 
-// Map token selections to full coin types for mainnet
+// Map token selections to their coin types for mainnet
 const COIN_TYPE_MAP: Record<string, string> = {
   SUI: "0x2::sui::SUI",
   USDC: "0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC",
-  // add other tokens if needed
+  // add additional tokens as needed
 };
 
 const Swap: React.FC = () => {
@@ -54,7 +55,7 @@ const Swap: React.FC = () => {
     fetchQuote();
   }, [fromToken, toToken, amount]);
 
-  // Helper: fetch a coin object from the wallet for a given token type and required amount
+  // Helper: fetch a coin object for the given token type
   const fetchCoinObject = async (
     owner: string,
     coinType: string,
@@ -65,7 +66,6 @@ const Swap: React.FC = () => {
     if (!coins || coins.length === 0) {
       throw new Error(`No coins found of type ${coinType}`);
     }
-    // Select the first coin with sufficient balance
     const coin = coins.find((c) => BigInt(c.balance) >= amountIn);
     if (!coin) {
       throw new Error("Insufficient coin balance for swap");
@@ -112,17 +112,17 @@ const Swap: React.FC = () => {
       );
       const coinInput = tx.object(coinObjectId);
 
-      // Use the NAVI SDK function to add swap instructions to the transaction.
+      // Call the NAVI SDK function to add swap instructions to the transaction.
+      // (swapPTB appends the required instructions to the transaction)
       await swapPTB(
         userAddress, // user's wallet address
-        tx, // transaction to populate
-        COIN_TYPE_MAP[fromToken], // source coin type
-        COIN_TYPE_MAP[toToken], // target coin type
-        coinInput, // real coin object from wallet
+        tx, // transaction block to populate
+        COIN_TYPE_MAP[fromToken], // from coin type
+        COIN_TYPE_MAP[toToken], // to coin type
+        coinInput, // actual coin object from the wallet
         amountIn,
         Number(minOut)
       );
-      // (After swapPTB, tx now contains the instructions for performing the swap.)
 
       setTxStatus("Signing and executing transaction...");
       signAndExecuteTransaction(
@@ -149,7 +149,6 @@ const Swap: React.FC = () => {
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Token Swap</h2>
-      {/* Wallet connection status */}
       {currentAccount ? (
         <p>Connected as: {currentAccount.address}</p>
       ) : (
@@ -167,19 +166,17 @@ const Swap: React.FC = () => {
           >
             <option value="SUI">SUI</option>
             <option value="USDC">USDC</option>
-            {/* Add other tokens as needed */}
           </select>
         </div>
         <div>
           <label className="block">To Token:</label>
           <select
             value={toToken}
-            onChange={(e) => setToCoinType(e.target.value)}
+            onChange={(e) => setToToken(e.target.value)}
             className="border p-2 w-full"
           >
             <option value="USDC">USDC</option>
             <option value="SUI">SUI</option>
-            {/* Add other tokens as needed */}
           </select>
         </div>
         <div>

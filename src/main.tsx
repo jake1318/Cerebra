@@ -10,7 +10,7 @@ import App from "./App";
 import "@mysten/dapp-kit/dist/index.css";
 import "./index.css";
 
-// Manually define network configuration for Sui mainnet (and other networks)
+// Manually define network configuration for Sui:
 const networkConfig = {
   mainnet: { url: getFullnodeUrl("mainnet") },
   testnet: { url: getFullnodeUrl("testnet") },
