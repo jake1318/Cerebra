@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mysten/dapp-kit": "^0.2.0",
+    "@mysten/dapp-kit": "^0.14.50",
     "@mysten/sui": "^1.21.2",
     "@reduxjs/toolkit": "^1.9.5",
     "@tanstack/react-query": "^4.29.0",
