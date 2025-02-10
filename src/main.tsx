@@ -1,38 +1,41 @@
-// src/main.tsx
-import "./polyfills"; // Must be imported first
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
+import {
+  createNetworkConfig,
+  SuiClientProvider,
+  WalletProvider,
+} from "@mysten/dapp-kit";
 import { getFullnodeUrl } from "@mysten/sui/client";
-import store from "./redux/store";
 import App from "./App";
-import "@mysten/dapp-kit/dist/index.css";
-import "./index.css";
 
-// Manually define network configuration for Sui:
-const networkConfig = {
-  mainnet: { url: getFullnodeUrl("mainnet") },
-  testnet: { url: getFullnodeUrl("testnet") },
-  devnet: { url: getFullnodeUrl("devnet") },
-};
-
+// Create a QueryClient for react-query (if not already done)
 const queryClient = new QueryClient();
+
+// Define networks for SuiClientProvider – include mainnet (and others if needed)
+const { networkConfig } = createNetworkConfig({
+  // You can include other networks for testing or dev, but mainnet is our default target
+  mainnet: { url: getFullnodeUrl("mainnet") },
+  // optional: only if you intend to support testnet
+  // localnet or devnet can be added here if needed for development
+});
+
+// Determine default network (from env or fallback to 'mainnet')
+const defaultNetwork = import.meta.env.VITE_NETWORK || "mainnet";
+// (Make sure VITE_NETWORK is one of the keys in networkConfig if you use it.
+// For production, this should be 'mainnet'.)
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <SuiClientProvider networks={networkConfig} defaultNetwork="mainnet">
-          <WalletProvider autoConnect={true}>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </WalletProvider>
-        </SuiClientProvider>
-      </QueryClientProvider>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <SuiClientProvider
+        networks={networkConfig}
+        defaultNetwork={defaultNetwork}
+      >
+        <WalletProvider>
+          <App />
+        </WalletProvider>
+      </SuiClientProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
