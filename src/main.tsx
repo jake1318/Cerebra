@@ -1,42 +1,48 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
-import store from "./redux/store"; // Correctly import from the redux folder
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
-import { getFullnodeUrl } from "@mysten/sui.js/client";
+import {
+  createNetworkConfig,
+  SuiClientProvider,
+  WalletProvider,
+} from "@mysten/dapp-kit";
+import { getFullnodeUrl } from "@mysten/sui/client";
+import { Provider } from "react-redux"; // ✅ Import Redux Provider
+import { BrowserRouter } from "react-router-dom"; // ✅ Import BrowserRouter
+import store from "./redux/store"; // ✅ Import the Redux store
 import App from "./App";
-import "@mysten/dapp-kit/dist/index.css"; // Import dApp Kit styles for wallet UI
-import "./index.css"; // Global app styles
 
-// Set up React Query client for data fetching (required by dApp Kit)
+// Initialize React Query client
 const queryClient = new QueryClient();
 
-// Define Sui network endpoints (localnet, devnet, testnet, mainnet)
-const networks = {
-  localnet: { url: getFullnodeUrl("localnet") },
-  devnet: { url: getFullnodeUrl("devnet") },
-  testnet: { url: getFullnodeUrl("testnet") },
+// Define Sui network configurations (e.g., mainnet)
+const { networkConfig } = createNetworkConfig({
   mainnet: { url: getFullnodeUrl("mainnet") },
-};
-
-// Choose default network from env or fallback to testnet
+  // ... (other networks can be added if needed)
+});
 const defaultNetwork = import.meta.env.VITE_NETWORK || "mainnet";
 
+// Render the app with all providers
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    {/* Provide Redux store context to the entire app (fixes missing store issue) */}
-    <Provider store={store}>
-      {/* Provide React Query context (needed for dApp Kit) */}
-      <QueryClientProvider client={queryClient}>
-        {/* Provide Sui RPC client and network context */}
-        <SuiClientProvider networks={networks} defaultNetwork={defaultNetwork}>
-          {/* Provide wallet connection context to enable Sui wallet integration */}
-          <WalletProvider>
-            <App />
-          </WalletProvider>
-        </SuiClientProvider>
-      </QueryClientProvider>
-    </Provider>
+    {/* Provide React Query context */}
+    <QueryClientProvider client={queryClient}>
+      {/* Provide Sui client context */}
+      <SuiClientProvider
+        networks={networkConfig}
+        defaultNetwork={defaultNetwork}
+      >
+        {/* Provide Sui wallet context */}
+        <WalletProvider>
+          {/* Provide Redux store context */}
+          <Provider store={store}>
+            {/* Provide React Router context */}
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </Provider>
+        </WalletProvider>
+      </SuiClientProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
