@@ -4,28 +4,27 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const { NAVISDKClient } = require("navi-sdk");
 
-// Load environment variables from .env
+// Load environment variables from .env (NAVI_API_KEY, NAVI_API_BASE_URL, etc.)
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Enable CORS (adjust origin as needed)
+// Enable CORS for all origins (adjust if needed for production)
 app.use(cors());
-
-// Parse JSON bodies
+// Parse JSON request bodies
 app.use(express.json());
 
-// Initialize the NAVI SDK client with the public API key and mainnet configuration
+// Initialize the NAVI SDK client with API key, base URL, and network config
 const client = new NAVISDKClient({
   apiKey: process.env.NAVI_API_KEY,
   apiBaseUrl: process.env.NAVI_API_BASE_URL,
-  networkType: "mainnet",
-  numberOfAccounts: 5,
+  networkType: "mainnet", // or use an env var to configure network if needed
+  numberOfAccounts: 5, // pre-initialize accounts for SDK if required
 });
 
 // Endpoint: GET /api/quote
-// Query parameters: from, to, amount (in smallest unit)
+// Query params: from, to, amount (amount in smallest unit, e.g. Wei or minimal coin unit)
 app.get("/api/quote", async (req, res) => {
   try {
     const { from, to, amount } = req.query;
@@ -34,10 +33,9 @@ app.get("/api/quote", async (req, res) => {
         .status(400)
         .json({ error: "Missing required query parameters: from, to, amount" });
     }
-    // Convert amount to BigInt if needed
-    const amountIn = BigInt(amount);
-    // Fetch the quote via the Navi SDK
+    const amountIn = BigInt(amount); // convert amount to BigInt
     const quote = await client.getQuote(from, to, amountIn);
+    // Return the quote data (e.g. amount_out, route details, etc.)
     return res.json({ data: quote });
   } catch (err) {
     console.error("Error fetching quote:", err);
@@ -46,8 +44,7 @@ app.get("/api/quote", async (req, res) => {
 });
 
 // Endpoint: POST /api/swap
-// (Optional) Relay swap transaction details if you wish to simulate or prebuild a transaction.
-// Note: The actual signing must be done on the frontend.
+// Body JSON: { from, to, amount, minOut } – prepare a swap transaction (no signing here)
 app.post("/api/swap", async (req, res) => {
   try {
     const { from, to, amount, minOut } = req.body;
@@ -58,9 +55,8 @@ app.post("/api/swap", async (req, res) => {
     }
     const amountIn = BigInt(amount);
     const minimumOut = BigInt(minOut);
-    // Execute the swap via the Navi SDK.
-    // IMPORTANT: In a public app, the transaction signing must occur in the frontend.
-    // This endpoint can be used to generate a transaction block (or simulate a swap) without signing.
+    // Use Navi SDK to generate a swap transaction block (unsigned).
+    // Note: Actual signing/execution should be done on the frontend via the user's wallet.
     const swapResult = await client.swap(
       from,
       to,
@@ -68,6 +64,7 @@ app.post("/api/swap", async (req, res) => {
       minimumOut,
       process.env.NAVI_API_KEY
     );
+    // Return the result (could include transaction payload or simulation outcome)
     return res.json({ data: swapResult });
   } catch (err) {
     console.error("Error executing swap:", err);
@@ -75,7 +72,12 @@ app.post("/api/swap", async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Cerebra API backend listening at http://localhost:${port}`);
-});
+// Only start the server if this script is run directly (for local development).
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Cerebra API backend listening at http://localhost:${port}`);
+  });
+}
+
+// Export the Express app for serverless deployment (Vercel will use this export)
+module.exports = app;

@@ -1,40 +1,25 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import rollupNodePolyfills from "rollup-plugin-node-polyfills";
 
 export default defineConfig(({ mode }) => {
-  // Load environment variables for the current mode (e.g. .env, .env.development)
-  const env = loadEnv(mode, process.cwd(), ""); // '' to load all keys, including non-VITE_
-
+  // Load environment variables (VITE_ and NAVI_ will be automatically exposed if prefixed)
+  const env = loadEnv(mode, process.cwd(), "");
   return {
     plugins: [react()],
-    define: {
-      // Provide process.env with our environment variables (as strings)
-      "process.env.NAVI_DEX_AGGREGATOR_API_BASE_URL": JSON.stringify(
-        env.VITE_AGGREGATOR_URL || ""
-      ),
-      "process.env.VITE_NETWORK": JSON.stringify(env.VITE_NETWORK || ""),
-      // Spread all loaded env keys into process.env.* definitions.
-      ...Object.fromEntries(
-        Object.entries(env).map(([key, val]) => [
-          `process.env.${key}`,
-          JSON.stringify(val),
-        ])
-      ),
-    },
-    optimizeDeps: {
-      esbuildOptions: {
-        define: {
-          global: "globalThis",
-          // Polyfill process for dependencies during dev bundling using a valid JSON value
-          process: JSON.stringify({ env: {} }),
+    // Remove custom Node polyfills since our API backend handles those functions.
+    // Use Vite's standard env system (access via import.meta.env)
+    envPrefix: ["VITE_", "NAVI_"],
+    server: {
+      // Proxy API requests in development to our backend server
+      proxy: {
+        "/api": {
+          target: "http://localhost:3001",
+          changeOrigin: true,
         },
       },
     },
     build: {
-      rollupOptions: {
-        plugins: [rollupNodePolyfills()], // Polyfill Node built-ins for production build
-      },
+      // No additional Rollup plugins needed for Node polyfills
     },
   };
 });
