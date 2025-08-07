@@ -1,0 +1,2211 @@
+// src/styles/LendingPage.scss
+// Last updated: 2025-07-24 06:02:15 UTC by jake1318
+
+// Variables for consistent styling with the new neon blue color scheme
+$neon-blue: #1e90ff; // Changed from cyan to neon blue
+$purple: #c45cf2; // Changed from magenta to the purple used in other pages
+$green: #00ff80; // Green from other pages
+$background-dark: rgba(5, 15, 30, 0.95);
+$background-medium: rgba(10, 15, 30, 0.9);
+$background-lighter: rgba(15, 25, 40, 0.8);
+$card-background: rgba(5, 15, 30, 0.7);
+$border-gradient: linear-gradient(
+  45deg,
+  rgba(30, 144, 255, 0.2),
+  // Changed to neon blue
+  rgba(196, 92, 242, 0.2) // Changed to purple
+);
+$text-gradient: linear-gradient(
+  90deg,
+  #1e90ff,
+  #c45cf2
+); // Changed to neon blue and purple
+$shadow-glow: 0 8px 32px rgba(30, 144, 255, 0.08),
+  // Changed to neon blue
+  0 8px 32px rgba(196, 92, 242, 0.08); // Changed to purple
+$shadow-glow-stronger: 0 8px 32px rgba(30, 144, 255, 0.15),
+  // Changed to neon blue
+  0 8px 32px rgba(196, 92, 242, 0.15); // Changed to purple
+
+.lending-page {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(
+      circle at top left,
+      rgba(30, 144, 255, 0.15) 0%,
+      // Changed to neon blue
+      rgba(5, 15, 30, 0.5) 40%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      rgba(196, 92, 242, 0.15) 0%,
+      // Changed to purple
+      rgba(5, 15, 30, 0.5) 40%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(5, 5, 15, 0.95) 0%,
+      rgba(10, 10, 30, 0.95) 100%
+    );
+  color: #fff;
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+
+  // Removed grid overlay to match other pages
+
+  // Add glow effects with updated colors
+  .glow-1 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(30, 144, 255, 0.12); // Changed to neon blue
+    border-radius: 50%;
+    filter: blur(70px);
+    top: 10%;
+    left: 15%;
+    z-index: -1;
+    animation: pulsate 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .glow-2 {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(196, 92, 242, 0.12); // Changed to purple
+    border-radius: 50%;
+    filter: blur(80px);
+    bottom: 10%;
+    right: 15%;
+    z-index: -1;
+    animation: pulsate 10s ease-in-out infinite alternate-reverse;
+    pointer-events: none;
+  }
+
+  // Add the green glow from other pages
+  .glow-3 {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    background: rgba(0, 255, 128, 0.12); // Green
+    border-radius: 50%;
+    filter: blur(70px);
+    top: 60%;
+    left: 70%;
+    z-index: -1;
+    animation: pulsate 9s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    background: $text-gradient;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(30, 144, 255, 0.2); // Changed to neon blue
+    font-weight: bold;
+    letter-spacing: 1px;
+
+    &::after {
+      content: "";
+      display: block;
+      width: 100px;
+      height: 4px;
+      margin: 0.5rem auto 0;
+      background: $text-gradient;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(30, 144, 255, 0.5),
+        // Changed to neon blue
+        0 0 10px rgba(196, 92, 242, 0.5); // Changed to purple
+    }
+  }
+
+  // Action section styling
+  .action-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+
+    button {
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px solid;
+      border-image: $border-gradient 1;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 144, 255, 0.15),
+          // Changed to neon blue
+          0 5px 15px rgba(196, 92, 242, 0.15); // Changed to purple
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &.refresh-btn {
+        background: linear-gradient(
+          45deg,
+          rgba(30, 144, 255, 0.2),
+          // Changed to neon blue
+          rgba(196, 92, 242, 0.2) // Changed to purple
+        );
+        &:hover:not(:disabled) {
+          background: linear-gradient(
+            45deg,
+            rgba(30, 144, 255, 0.3),
+            // Changed to neon blue
+            rgba(196, 92, 242, 0.3) // Changed to purple
+          );
+        }
+      }
+
+      &.connect-btn {
+        background: linear-gradient(
+          45deg,
+          #1e90ff,
+          #c45cf2
+        ); // Changed to neon blue and purple
+        color: #000;
+        border: none;
+        box-shadow: 0 0 20px rgba(30, 144, 255, 0.3),
+          // Changed to neon blue
+          0 0 20px rgba(196, 92, 242, 0.3); // Changed to purple
+
+        &:hover:not(:disabled) {
+          transform: translateY(-3px);
+          box-shadow: 0 5px 25px rgba(30, 144, 255, 0.4),
+            // Changed to neon blue
+            0 5px 25px rgba(196, 92, 242, 0.4); // Changed to purple
+        }
+      }
+
+      &.obligation-btn {
+        background: rgba(0, 0, 0, 0.3);
+        border: 2px solid;
+        border-image: linear-gradient(
+            45deg,
+            rgba(30, 144, 255, 0.6),
+            // Changed to neon blue
+            rgba(196, 92, 242, 0.6) // Changed to purple
+          )
+          1;
+      }
+    }
+
+    .status-message {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border-left: 3px solid;
+      border-image: $text-gradient 1;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+  }
+
+  // Wallet status indicator
+  .wallet-status {
+    margin-bottom: 2rem;
+
+    .connected-status,
+    .disconnected-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.7rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+      box-shadow: $shadow-glow;
+      border: 1px solid;
+      border-image: $border-gradient 1;
+
+      .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+
+        &.connected {
+          background: $green; // Changed to green from other pages
+          box-shadow: 0 0 10px $green; // Changed to green from other pages
+        }
+
+        &.disconnected {
+          background: #f44336;
+          box-shadow: 0 0 10px #f44336;
+        }
+
+        &.obligation {
+          background: $neon-blue; // Changed to neon blue
+          box-shadow: 0 0 10px $neon-blue; // Changed to neon blue
+        }
+      }
+
+      .obligation-status {
+        margin-left: 1rem;
+        padding-left: 1rem;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  // ENHANCED Market Summary styling with holographic/cyberpunk aesthetic
+  .market-summary {
+    background: rgba(5, 15, 30, 0.75);
+    border-radius: 16px;
+    padding: 0;
+    margin: 1.5rem 0;
+    color: white;
+    box-shadow: 0 8px 32px rgba(30, 144, 255, 0.15),
+      0 8px 32px rgba(196, 92, 242, 0.15);
+    border: 1px solid rgba(30, 144, 255, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+
+    // Animated gradient border effect
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #1e90ff, #c45cf2, #00ff80, #1e90ff);
+      background-size: 300% 100%;
+      animation: gradient-slide 4s linear infinite;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      margin: 0;
+      padding: 1.2rem;
+      color: #fff;
+      text-align: left;
+      font-weight: 800;
+      background: rgba(5, 15, 30, 0.7);
+      border-bottom: 1px solid rgba(30, 144, 255, 0.2);
+      text-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+
+      // Remove the ::after pseudo-element that was causing the issue
+      &::after {
+        display: none; // This removes the "MARKETS" text that was showing up
+      }
+    }
+
+    .summary-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      position: relative;
+      z-index: 1;
+
+      .summary-item {
+        padding: 1.5rem;
+        position: relative;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-right: 1px solid rgba(30, 144, 255, 0.1);
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &:hover {
+          background: rgba(30, 144, 255, 0.05);
+          transform: translateY(-2px);
+        }
+
+        .summary-label {
+          display: block;
+          font-size: 0.8rem;
+          margin-bottom: 8px;
+          color: rgba(255, 255, 255, 0.6);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .summary-value {
+          display: block;
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: white;
+          font-family: "JetBrains Mono", monospace;
+          letter-spacing: -0.5px;
+
+          &.highlight {
+            color: #00ff80;
+            text-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
+          }
+        }
+
+        // Token icon inside summary
+        .mini-token-logo {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          vertical-align: middle;
+          margin-right: 8px;
+          border: 2px solid rgba(30, 144, 255, 0.3);
+          box-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
+        }
+      }
+    }
+
+    // Add scanline effect
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        rgba(30, 144, 255, 0.03) 50%
+      );
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.5;
+    }
+  }
+
+  // ENHANCED Wallet totals summary with futuristic design
+  .wallet-totals-summary {
+    background: rgba(5, 15, 30, 0.75);
+    border-radius: 16px;
+    padding: 0;
+    margin: 2rem 0;
+    color: white;
+    box-shadow: 0 8px 32px rgba(30, 144, 255, 0.15),
+      0 8px 32px rgba(196, 92, 242, 0.15);
+    border: 1px solid rgba(30, 144, 255, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+
+    // Digital circuit pattern background
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: radial-gradient(
+          circle at 25% 25%,
+          rgba(30, 144, 255, 0.05) 1px,
+          transparent 1px
+        ),
+        radial-gradient(
+          circle at 75% 75%,
+          rgba(196, 92, 242, 0.05) 1px,
+          transparent 1px
+        );
+      background-size: 30px 30px;
+      background-position: 0 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      margin: 0;
+      padding: 1.2rem;
+      color: #fff;
+      text-align: left;
+      font-weight: 800;
+      background: rgba(5, 15, 30, 0.7);
+      border-bottom: 1px solid rgba(30, 144, 255, 0.2);
+      text-shadow: 0 0 10px rgba(30, 144, 255, 0.5);
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+
+      &::after {
+        display: none; // Remove the "WALLET" text from this section as well
+      }
+    }
+
+    .totals-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      border-bottom: 1px solid rgba(30, 144, 255, 0.1);
+
+      .total-item {
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        border-right: 1px solid rgba(30, 144, 255, 0.1);
+        position: relative;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &:hover {
+          background: rgba(30, 144, 255, 0.05);
+          transform: translateY(-2px);
+        }
+
+        .total-label {
+          display: block;
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 0.8rem;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .total-value {
+          display: block;
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #fff;
+          font-family: "JetBrains Mono", monospace;
+          letter-spacing: -0.5px;
+        }
+
+        .total-note {
+          display: block;
+          font-size: 0.7rem;
+          margin-top: 0.5rem;
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+
+    // Assets summary section styling
+    .assets-summary {
+      padding: 1.5rem;
+      position: relative;
+      z-index: 1;
+
+      // Create columns for Top Collaterals and Top Borrows
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+
+      h3 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        padding-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 50px;
+          height: 2px;
+          background: $text-gradient;
+          border-radius: 2px;
+        }
+      }
+
+      .assets-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+
+        .asset-item {
+          background: rgba(15, 25, 40, 0.5);
+          padding: 0.8rem;
+          border-radius: 8px;
+          border: 1px solid rgba(30, 144, 255, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          transition: all 0.2s ease;
+
+          &:hover {
+            transform: translateX(3px);
+            background: rgba(15, 25, 40, 0.7);
+            border-color: rgba(30, 144, 255, 0.4);
+          }
+
+          .asset-symbol {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #fff;
+            flex: 1;
+          }
+
+          .asset-amount {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0 1rem;
+            font-family: "JetBrains Mono", monospace;
+          }
+
+          .asset-value {
+            font-size: 0.9rem;
+            color: $green;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
+
+  // Selected obligation banner
+  .selected-obligation-banner {
+    background: $background-lighter;
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin: 1rem 0;
+    color: white;
+    box-shadow: $shadow-glow;
+    border: 1px solid;
+    border-image: $border-gradient 1;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    .selected-obligation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+
+      .obligation-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        .label {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .value {
+          font-weight: 600;
+          background: $text-gradient;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+        }
+
+        .locked-indicator {
+          background: rgba(244, 67, 54, 0.2);
+          color: #f44336;
+          padding: 0.2rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+        }
+
+        .change-btn {
+          padding: 0.3rem 0.7rem;
+          background: rgba(0, 0, 0, 0.3);
+          border: 1px solid;
+          border-image: $border-gradient 1;
+          border-radius: 6px;
+          color: white;
+          font-size: 0.8rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+          }
+        }
+      }
+
+      .obligation-summary {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+
+        .summary-item {
+          .summary-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+          }
+
+          .summary-value {
+            font-weight: 600;
+
+            &.ltv-low {
+              color: $green; // Changed to green from other pages
+            }
+
+            &.ltv-medium {
+              color: #ff9800;
+            }
+
+            &.ltv-high {
+              color: #f44336;
+            }
+
+            &.risk-low {
+              color: $green; // Changed to green from other pages
+            }
+
+            &.risk-medium {
+              color: #ff9800;
+            }
+
+            &.risk-high {
+              color: #f44336;
+            }
+          }
+        }
+      }
+    }
+
+    .obligation-details-preview {
+      .warning-message {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+
+        &.locked {
+          border-left: 3px solid #f44336;
+
+          .icon {
+            color: #f44336;
+          }
+        }
+
+        &.empty {
+          border-left: 3px solid #ff9800;
+
+          .icon {
+            color: #ff9800;
+          }
+        }
+
+        .action-btn {
+          margin-left: auto;
+          padding: 0.3rem 0.8rem;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &.unlock-btn {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+
+            &:hover {
+              background: rgba(244, 67, 54, 0.3);
+            }
+          }
+
+          &.add-collateral-btn {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid #ff9800;
+            color: #ff9800;
+
+            &:hover {
+              background: rgba(255, 152, 0, 0.3);
+            }
+          }
+        }
+      }
+
+      .assets-preview {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+
+        .collateral-preview,
+        .borrows-preview {
+          flex: 1;
+          min-width: 250px;
+
+          h4 {
+            font-size: 1rem;
+            margin-bottom: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.3rem;
+          }
+
+          .assets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .asset-item {
+              font-size: 0.9rem;
+              color: rgba(255, 255, 255, 0.9);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Update error-message to center and limit width
+  .error-message {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin: 1rem auto; // Center horizontally
+    border-left: 3px solid #f44336;
+    max-width: 800px; // Limit the width
+    text-align: center;
+  }
+
+  .obligation-prompt {
+    background: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem auto; // Center horizontally
+    border-left: 3px solid #ff9800;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    max-width: 800px; // Limit the width
+
+    p {
+      margin: 0;
+    }
+
+    .select-tab-btn {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 152, 0, 0.2);
+      border: 1px solid #ff9800;
+      border-radius: 6px;
+      color: #ff9800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 152, 0, 0.3);
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  // Update create-obligation-container to center the button with a max-width
+  .create-obligation-container {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem auto;
+    max-width: 400px; // Limit the width of the container
+
+    .create-obligation-btn {
+      width: 100%; // The button will fill the container, but not the whole screen
+      background: linear-gradient(90deg, #1e90ff, #c45cf2);
+      color: #000;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(30, 144, 255, 0.4),
+          0 5px 20px rgba(196, 92, 242, 0.4);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  // Rewards banner
+  .rewards-banner {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 255, 128, 0.1) 0%,
+      // Changed to green from other pages
+      rgba(255, 235, 59, 0.1) 100%
+    );
+    border-radius: 16px;
+    padding: 1.2rem;
+    margin: 1rem 0;
+    border: 1px solid rgba(0, 255, 128, 0.3); // Changed to green from other pages
+    position: relative;
+
+    h3 {
+      font-size: 1.2rem;
+      color: $green; // Changed to green from other pages
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      li {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .claim-btn {
+      background: $green; // Changed to green from other pages
+      color: black; // Changed to black for better contrast
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: darken($green, 5%); // Slightly darker shade on hover
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 255, 128, 0.3); // Changed to green from other pages
+      }
+    }
+  }
+
+  // Improve styling for position-section (collateral section)
+  .position-section {
+    background: rgba(5, 15, 30, 0.75);
+    border-radius: 16px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 8px 32px rgba(30, 144, 255, 0.15),
+      0 8px 32px rgba(196, 92, 242, 0.15);
+    border: 1px solid rgba(30, 144, 255, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    h4 {
+      font-size: 1.25rem;
+      margin: 0.5rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid;
+      border-image: linear-gradient(90deg, #1e90ff, #c45cf2) 1;
+
+      &::after {
+        content: "";
+        display: block;
+        width: 50px;
+        height: 2px;
+        margin-top: 0.5rem;
+        background: linear-gradient(90deg, #1e90ff, #c45cf2);
+        border-radius: 2px;
+        opacity: 0.7;
+      }
+    }
+
+    .position-table {
+      width: 100%;
+
+      .position-header {
+        display: grid;
+        grid-template-columns: 3fr 4fr 2fr 3fr;
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        border-bottom: 1px solid rgba(30, 144, 255, 0.2);
+      }
+
+      .position-row {
+        display: grid;
+        grid-template-columns: 3fr 4fr 2fr 3fr;
+        padding: 1rem 0.8rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        align-items: center;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background: rgba(30, 144, 255, 0.05);
+        }
+
+        .position-asset {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+
+          .asset-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid rgba(30, 144, 255, 0.3);
+          }
+        }
+
+        .position-balance {
+          .balance-amount {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+          }
+
+          .balance-value {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+          }
+        }
+
+        .position-actions {
+          .action-button {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.withdraw {
+              background: rgba(196, 92, 242, 0.15);
+              border: 1px solid rgba(196, 92, 242, 0.4);
+              color: #c45cf2;
+
+              &:hover {
+                background: rgba(196, 92, 242, 0.25);
+                transform: translateY(-2px);
+              }
+            }
+
+            &.manage-collateral {
+              background: rgba(0, 255, 128, 0.15);
+              border: 1px solid rgba(0, 255, 128, 0.4);
+              color: #00ff80;
+
+              &:hover {
+                background: rgba(0, 255, 128, 0.25);
+                transform: translateY(-2px);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // User position cards
+  .user-positions-summary {
+    margin: 2rem 0;
+
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      color: rgba(255, 255, 255, 0.9);
+      position: relative;
+      padding-bottom: 0.5rem;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 70px;
+        height: 2px;
+        background: $text-gradient;
+        border-radius: 2px;
+      }
+    }
+
+    .user-positions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+
+      .user-position-card {
+        background: $card-background;
+        border-radius: 12px;
+        border: 1px solid;
+        border-image: $border-gradient 1;
+        padding: 1.2rem;
+        box-shadow: $shadow-glow;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: $shadow-glow-stronger;
+        }
+
+        &.collateral {
+          border-image: linear-gradient(
+              45deg,
+              rgba(30, 144, 255, 0.3),
+              // Changed to neon blue
+              rgba(0, 255, 128, 0.3) // Changed to green
+            )
+            1;
+        }
+
+        &.borrowed {
+          border-image: linear-gradient(
+              45deg,
+              rgba(255, 87, 34, 0.3),
+              rgba(196, 92, 242, 0.3) // Changed to purple
+            )
+            1;
+        }
+
+        .position-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+
+          &::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            padding: 2px;
+            background: $text-gradient;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box,
+              linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+          }
+
+          .coin-icon {
+            width: 28px;
+            height: 28px;
+          }
+        }
+
+        .position-details {
+          flex: 1;
+
+          h4 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 0.8rem;
+            background: $text-gradient;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            font-weight: 600;
+          }
+
+          .position-values {
+            margin-bottom: 1rem;
+
+            .value-item {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 0.3rem;
+
+              .label {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.85rem;
+              }
+
+              .value {
+                font-weight: 600;
+                font-family: "JetBrains Mono", monospace;
+              }
+
+              .usd {
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.7);
+              }
+            }
+          }
+
+          .position-actions {
+            display: flex;
+            gap: 0.8rem;
+
+            .action-btn {
+              flex: 1;
+              padding: 0.5rem 0.3rem;
+              border-radius: 6px;
+              font-size: 0.85rem;
+              text-align: center;
+              cursor: pointer;
+              transition: all 0.2s ease;
+
+              &.supply {
+                background: rgba(30, 144, 255, 0.2); // Changed to neon blue
+                border: 1px solid rgba(30, 144, 255, 0.5);
+                color: #1e90ff; // Changed to neon blue
+
+                &:hover {
+                  background: rgba(30, 144, 255, 0.3);
+                  transform: translateY(-2px);
+                }
+              }
+
+              &.withdraw {
+                background: rgba(196, 92, 242, 0.2); // Changed to purple
+                border: 1px solid rgba(196, 92, 242, 0.5);
+                color: #c45cf2; // Changed to purple
+
+                &:hover {
+                  background: rgba(196, 92, 242, 0.3);
+                  transform: translateY(-2px);
+                }
+              }
+
+              &.repay {
+                background: rgba(
+                  0,
+                  255,
+                  128,
+                  0.2
+                ); // Changed to green from other pages
+                border: 1px solid rgba(0, 255, 128, 0.5);
+                color: #00ff80; // Changed to green from other pages
+
+                &:hover {
+                  background: rgba(0, 255, 128, 0.3);
+                  transform: translateY(-2px);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Tab navigation styling
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1.5rem 0 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    button {
+      padding: 0.8rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+
+      &:hover:not(.active) {
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      &.active {
+        color: #000;
+        background: linear-gradient(90deg, #1e90ff, #c45cf2);
+        box-shadow: 0 0 20px rgba(30, 144, 255, 0.2),
+          0 0 20px rgba(196, 92, 242, 0.2);
+      }
+    }
+  }
+
+  // Lending table styling
+  .lending-table-container {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    margin: 1rem 0;
+
+    .lending-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+
+        tr {
+          background: rgba(5, 15, 30, 0.95);
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        th {
+          padding: 1rem;
+          text-align: left;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.7);
+          position: relative;
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(
+              to right,
+              rgba(30, 144, 255, 0.7),
+              rgba(196, 92, 242, 0.7)
+            );
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          background: rgba(0, 0, 0, 0.2);
+          transition: all 0.2s ease;
+
+          &:nth-child(even) {
+            background: rgba(0, 0, 0, 0.3);
+          }
+
+          &:hover {
+            background: rgba(30, 144, 255, 0.1); // Changed to neon blue
+            transform: translateY(-1px);
+          }
+
+          td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+            &.asset-cell {
+              .asset-with-logo {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+
+                .token-logo {
+                  width: 32px;
+                  height: 32px;
+                  border-radius: 50%;
+                  border: 2px solid rgba(30, 144, 255, 0.3); // Changed to neon blue
+                  background: rgba(0, 0, 0, 0.2);
+                }
+
+                .asset-text {
+                  font-weight: 600;
+                }
+              }
+            }
+
+            &.apy-cell {
+              .positive {
+                color: $green; // Changed to green from other pages
+              }
+
+              .negative {
+                color: #ff9800;
+              }
+            }
+
+            &.actions-cell {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 0.5rem;
+
+              button {
+                padding: 0.5rem 0.8rem;
+                border-radius: 6px;
+                font-size: 0.85rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 90px;
+
+                &:disabled {
+                  opacity: 0.5;
+                  cursor: not-allowed;
+                }
+
+                &.deposit-btn,
+                &.deposit-collateral-btn {
+                  background: rgba(30, 144, 255, 0.2); // Changed to neon blue
+                  border: 1px solid rgba(30, 144, 255, 0.4);
+                  color: #1e90ff; // Changed to neon blue
+
+                  &:hover:not(:disabled) {
+                    background: rgba(30, 144, 255, 0.3);
+                    transform: translateY(-2px);
+                  }
+                }
+
+                &.withdraw-btn,
+                &.withdraw-collateral-btn {
+                  background: rgba(196, 92, 242, 0.2); // Changed to purple
+                  border: 1px solid rgba(196, 92, 242, 0.4);
+                  color: #c45cf2; // Changed to purple
+
+                  &:hover:not(:disabled) {
+                    background: rgba(196, 92, 242, 0.3);
+                    transform: translateY(-2px);
+                  }
+                }
+
+                &.borrow-btn {
+                  background: rgba(
+                    0,
+                    255,
+                    128,
+                    0.2
+                  ); // Changed to green from other pages
+                  border: 1px solid rgba(0, 255, 128, 0.4);
+                  color: #00ff80; // Changed to green from other pages
+
+                  &:hover:not(:disabled) {
+                    background: rgba(0, 255, 128, 0.3);
+                    transform: translateY(-2px);
+                  }
+                }
+
+                &.repay-btn {
+                  background: rgba(255, 152, 0, 0.2);
+                  border: 1px solid rgba(255, 152, 0, 0.4);
+                  color: #ff9800;
+
+                  &:hover:not(:disabled) {
+                    background: rgba(255, 152, 0, 0.3);
+                    transform: translateY(-2px);
+                  }
+                }
+              }
+            }
+
+            &.loading,
+            &.no-data {
+              text-align: center;
+              padding: 2rem;
+              color: rgba(255, 255, 255, 0.7);
+              font-style: italic;
+            }
+
+            &.user-value {
+              color: $neon-blue; // Changed to neon blue
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Obligations tab styling
+  .obligations-tab-container {
+    padding: 1rem 0;
+
+    h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      background: $text-gradient;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      text-shadow: 0 0 20px rgba(30, 144, 255, 0.2); // Changed to neon blue
+    }
+
+    .result-message {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid;
+
+      &.success {
+        border-color: $green; // Changed to green from other pages
+      }
+
+      &.error {
+        border-color: #f44336;
+      }
+
+      .tx-link {
+        color: $neon-blue; // Changed to neon blue
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 0.5rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: lighten($neon-blue, 10%);
+          transform: translateX(3px);
+        }
+      }
+    }
+
+    .no-obligations-message {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2rem;
+      text-align: center;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+
+    .obligations-list {
+      h3 {
+        font-size: 1.3rem;
+        margin: 2rem 0 1rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        padding-bottom: 0.5rem;
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 50px;
+          height: 2px;
+          background: $text-gradient;
+          border-radius: 2px;
+        }
+      }
+
+      .obligations-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-bottom: 2rem;
+
+        thead {
+          tr {
+            background: rgba(5, 15, 30, 0.95);
+          }
+
+          th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(30, 144, 255, 0.3); // Changed to neon blue
+          }
+        }
+
+        tbody {
+          tr {
+            transition: all 0.2s ease;
+            background: rgba(0, 0, 0, 0.2);
+
+            &:nth-child(even) {
+              background: rgba(0, 0, 0, 0.3);
+            }
+
+            &:hover {
+              background: rgba(30, 144, 255, 0.1); // Changed to neon blue
+              transform: translateY(-1px);
+            }
+
+            &.selected {
+              background: rgba(30, 144, 255, 0.15); // Changed to neon blue
+              border-left: 3px solid $neon-blue; // Changed to neon blue
+            }
+
+            &.locked {
+              background: rgba(244, 67, 54, 0.1);
+            }
+
+            &.empty {
+              background: rgba(255, 152, 0, 0.05);
+            }
+
+            td {
+              padding: 0.8rem;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+              &.id-cell {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 0.9rem;
+              }
+
+              &.status-cell {
+                .locked-status {
+                  color: #f44336;
+                  font-weight: 600;
+                }
+
+                .empty-status,
+                .active-status {
+                  color: $green; // Changed to green from other pages
+                  font-weight: 600;
+                }
+              }
+
+              &.collateral-cell,
+              &.borrows-cell {
+                font-weight: 600;
+              }
+
+              &.ltv-cell {
+                &.ltv-low {
+                  color: $green; // Changed to green from other pages
+                }
+
+                &.ltv-medium {
+                  color: #ff9800;
+                }
+
+                &.ltv-high {
+                  color: #f44336;
+                  font-weight: 600;
+                }
+              }
+
+              &.actions-cell {
+                display: flex;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+
+                button {
+                  padding: 0.5rem 0.8rem;
+                  border-radius: 6px;
+                  font-size: 0.85rem;
+                  cursor: pointer;
+                  transition: all 0.2s ease;
+                  min-width: 80px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+
+                  &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                  }
+
+                  &.select-btn {
+                    background: rgba(30, 144, 255, 0.2); // Changed to neon blue
+                    border: 1px solid rgba(30, 144, 255, 0.4);
+                    color: #1e90ff; // Changed to neon blue
+
+                    &:hover:not(:disabled) {
+                      background: rgba(30, 144, 255, 0.3);
+                      transform: translateY(-2px);
+                    }
+                  }
+
+                  &.deselect-btn {
+                    background: rgba(196, 92, 242, 0.2); // Changed to purple
+                    border: 1px solid rgba(196, 92, 242, 0.4);
+                    color: #c45cf2; // Changed to purple
+
+                    &:hover:not(:disabled) {
+                      background: rgba(196, 92, 242, 0.3);
+                      transform: translateY(-2px);
+                    }
+                  }
+
+                  &.unlock-btn {
+                    background: rgba(244, 67, 54, 0.2);
+                    border: 1px solid rgba(244, 67, 54, 0.4);
+                    color: #f44336;
+
+                    &:hover:not(:disabled) {
+                      background: rgba(244, 67, 54, 0.3);
+                      transform: translateY(-2px);
+                    }
+                  }
+
+                  &.add-collateral-btn {
+                    background: rgba(
+                      0,
+                      255,
+                      128,
+                      0.2
+                    ); // Changed to green from other pages
+                    border: 1px solid rgba(0, 255, 128, 0.4);
+                    color: #00ff80; // Changed to green from other pages
+
+                    &:hover:not(:disabled) {
+                      background: rgba(0, 255, 128, 0.3);
+                      transform: translateY(-2px);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .selected-obligation-details {
+        background: rgba(5, 15, 30, 0.75);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: $shadow-glow;
+        border: 1px solid rgba(30, 144, 255, 0.3); // Changed to neon blue
+
+        h3 {
+          margin-top: 0;
+        }
+
+        .obligation-detail-card {
+          .obligation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+
+            h4 {
+              font-size: 1.1rem;
+              margin: 0;
+              display: flex;
+              align-items: center;
+              gap: 0.8rem;
+              font-family: "JetBrains Mono", monospace;
+
+              .locked-badge {
+                font-size: 0.8rem;
+                padding: 0.2rem 0.5rem;
+                background: rgba(244, 67, 54, 0.2);
+                color: #f44336;
+                border-radius: 4px;
+                font-family: system-ui, sans-serif;
+              }
+            }
+          }
+
+          .obligation-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+
+            .stat-item {
+              background: rgba(0, 0, 0, 0.2);
+              padding: 1rem;
+              border-radius: 8px;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+
+              .stat-label {
+                font-size: 0.8rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 0.3rem;
+                display: block;
+              }
+
+              .stat-value {
+                font-size: 1.1rem;
+                font-weight: 600;
+
+                &.ltv {
+                  &.ltv-low {
+                    color: $green; // Changed to green from other pages
+                  }
+
+                  &.ltv-medium {
+                    color: #ff9800;
+                  }
+
+                  &.ltv-high {
+                    color: #f44336;
+                  }
+                }
+
+                &.risk-low {
+                  color: $green; // Changed to green from other pages
+                }
+
+                &.risk-medium {
+                  color: #ff9800;
+                }
+
+                &.risk-high {
+                  color: #f44336;
+                }
+
+                &.risk-extreme {
+                  color: #f44336;
+                }
+
+                &.risk-unknown {
+                  color: #9e9e9e;
+                }
+              }
+            }
+          }
+
+          .collateral-list,
+          .borrows-list {
+            margin-bottom: 1.5rem;
+
+            h5 {
+              font-size: 1rem;
+              color: rgba(255, 255, 255, 0.8);
+              margin-bottom: 0.5rem;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+              padding-bottom: 0.3rem;
+            }
+
+            ul {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+              gap: 0.5rem;
+
+              li {
+                background: rgba(0, 0, 0, 0.2);
+                padding: 0.5rem 0.8rem;
+                border-radius: 6px;
+                font-size: 0.9rem;
+              }
+            }
+          }
+
+          .unlock-container,
+          .add-collateral-container {
+            margin-top: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.8rem;
+
+            button {
+              padding: 0.7rem 1.2rem;
+              border-radius: 8px;
+              font-size: 0.9rem;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              border: 0;
+            }
+
+            .lock-info,
+            .info-text {
+              margin: 0;
+              font-size: 0.9rem;
+              color: rgba(255, 255, 255, 0.7);
+            }
+          }
+
+          .unlock-container {
+            border-color: #f44336;
+
+            .unlock-btn {
+              background: rgba(244, 67, 54, 0.2);
+              border: 1px solid #f44336;
+              color: #f44336;
+
+              &:hover:not(:disabled) {
+                background: rgba(244, 67, 54, 0.3);
+                transform: translateY(-2px);
+              }
+
+              &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+              }
+            }
+          }
+
+          .add-collateral-container {
+            border-color: #ff9800;
+
+            .add-collateral-btn {
+              background: rgba(255, 152, 0, 0.2);
+              border: 1px solid #ff9800;
+              color: #ff9800;
+
+              &:hover {
+                background: rgba(255, 152, 0, 0.3);
+                transform: translateY(-2px);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // User dashboard styling
+  .user-dashboard {
+    background: rgba(5, 15, 30, 0.75);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    box-shadow: $shadow-glow;
+    border: 1px solid rgba(30, 144, 255, 0.3); // Changed to neon blue
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+
+      h3 {
+        font-size: 1.3rem;
+        margin: 0;
+        background: $text-gradient;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        font-weight: bold;
+      }
+
+      .refresh-btn {
+        padding: 0.5rem 1rem;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid;
+        border-image: $border-gradient 1;
+        border-radius: 6px;
+        color: white;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.5);
+          transform: translateY(-2px);
+        }
+      }
+    }
+
+    .dashboard-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      .metric {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: translateY(-3px);
+          background: rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-label {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.7);
+          margin-bottom: 0.5rem;
+          display: block;
+        }
+
+        .metric-value {
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #fff;
+          font-family: "JetBrains Mono", monospace;
+
+          &.health-factor {
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+
+    .rewards-section {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0, 255, 128, 0.2); // Changed to green from other pages
+
+      .rewards-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h4 {
+          font-size: 1.1rem;
+          margin: 0;
+          color: $green; // Changed to green from other pages
+        }
+
+        .rewards-actions {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+
+          .rewards-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: $green; // Changed to green from other pages
+          }
+
+          .claim-rewards-button {
+            background: rgba(
+              0,
+              255,
+              128,
+              0.2
+            ); // Changed to green from other pages
+            border: 1px solid rgba(0, 255, 128, 0.4);
+            color: $green; // Changed to green from other pages
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover:not(:disabled) {
+              background: rgba(0, 255, 128, 0.3);
+              transform: translateY(-2px);
+            }
+
+            &:disabled {
+              opacity: 0.5;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+
+      .rewards-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 0.8rem;
+
+        .reward-item {
+          background: rgba(0, 0, 0, 0.3);
+          padding: 0.8rem;
+          border-radius: 8px;
+          border: 1px solid rgba(0, 255, 128, 0.2); // Changed to green from other pages
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .reward-token {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+
+            .reward-token-logo {
+              width: 24px;
+              height: 24px;
+              border-radius: 50%;
+              border: 2px solid rgba(0, 255, 128, 0.3); // Changed to green from other pages
+            }
+          }
+
+          .reward-amount {
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+
+            .reward-value {
+              margin-left: 0.5rem;
+              color: rgba(255, 255, 255, 0.6);
+              font-size: 0.8rem;
+              font-weight: normal;
+            }
+          }
+        }
+      }
+    }
+
+    // Health indicator styling
+    .health-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      .health-bar {
+        width: 60px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+
+        .health-fill {
+          height: 100%;
+          width: 80%; // Will be overridden with inline style
+          border-radius: 4px;
+
+          &.safe {
+            background: $green; // Changed to green from other pages
+            box-shadow: 0 0 10px $green; // Changed to green from other pages
+          }
+
+          &.warning {
+            background: #ff9800;
+            box-shadow: 0 0 10px #ff9800;
+          }
+
+          &.danger {
+            background: #f44336;
+            box-shadow: 0 0 10px #f44336;
+          }
+        }
+      }
+
+      .health-label {
+        font-weight: 600;
+        font-size: 1rem;
+        font-family: "JetBrains Mono", monospace;
+
+        &.safe {
+          color: $green; // Changed to green from other pages
+        }
+
+        &.warning {
+          color: #ff9800;
+        }
+
+        &.danger {
+          color: #f44336;
+        }
+      }
+    }
+  }
+
+  // Connect wallet and no positions prompts
+  .connect-wallet-prompt,
+  .no-positions-prompt {
+    background: rgba(5, 15, 30, 0.75);
+    border-radius: 16px;
+    padding: 3rem 1.5rem;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: $shadow-glow;
+    border: 1px solid rgba(30, 144, 255, 0.3); // Changed to neon blue
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    .prompt-content {
+      max-width: 500px;
+
+      h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        background: $text-gradient;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        font-weight: bold;
+      }
+
+      p {
+        margin-bottom: 2rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+      }
+
+      .refresh-btn {
+        background: rgba(30, 144, 255, 0.2); // Changed to neon blue
+        border: 1px solid rgba(30, 144, 255, 0.4);
+        color: #1e90ff; // Changed to neon blue
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(30, 144, 255, 0.3);
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  // Animation keyframes
+  @keyframes pulsate {
+    0% {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes gradient-slide {
+    0% {
+      background-position: 0% 0;
+    }
+    100% {
+      background-position: 100% 0;
+    }
+  }
+}
